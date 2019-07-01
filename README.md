@@ -8,4 +8,4 @@ Models: 8542B, 8500B, 8502B, 8510B
 ### Documentation
 Manual: [Series Manual](https://www.bkprecision.com/products/dc-electronic-loads/8500B-8500b-300-w-programmable-dc-electronic-load.html)
 
-Programming Manual:Not Yet Released
+Programming Manual: Not Yet Released
