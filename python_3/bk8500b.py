@@ -167,29 +167,41 @@ def readCVVoltage(serial):
     resp = bk8500b.command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
 
-def setCWPower(serial):
+def setCWPower(power, serial):
     """Set CW mode watt value"""
+    value = int(power * 1000)
     cmd = [0] * 26
     cmd[2] = 0x2E
-
+    cmd[3] = value & 0xFF
+    cmd[4] = (value >> 8) & 0xFF
+    cmd[5] = (value >> 16) & 0xFF
+    cmd[6] = (value >> 24) & 0xFF
+    bk8500b.command(cmd, serial)
+    
 def readCWPower(serial):
     """Read CW mode watt value"""
     cmd = [0] * 26
     cmd[2] = 0x2F
     resp = bk8500b.command(cmd, serial)
-    return resp
+    return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
 
-def setCRResistance(serial):
+def setCRResistance(resistance, serial):
     """Set CR mode resistance value"""
+    value = int(resistance * 1000)
     cmd = [0] * 26
     cmd[2] = 0x30
-
+    cmd[3] = value & 0xFF
+    cmd[4] = (value >> 8) & 0xFF
+    cmd[5] = (value >> 16) & 0xFF
+    cmd[6] = (value >> 24) & 0xFF
+    bk8500b.command(cmd, serial)
+    
 def readCRResistance(serial):
     """Read CR mode resistance value"""
     cmd = [0] * 26
     cmd[2] = 0x31
     resp = bk8500b.command(cmd, serial)
-    return resp
+    return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
     
 def setCCTransient(serial):
     """Set CC mode transient current and timer parameter."""
