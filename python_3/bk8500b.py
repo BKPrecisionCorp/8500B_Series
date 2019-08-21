@@ -6,7 +6,7 @@ def csum(command):
     
 def command(command, serial):                          
     command[0] = 0xAA
-    command[25] = bk8500b.csum(command)
+    command[25] = csum(command)
     serial.write(command)                        
     resp = serial.read(26)
     if resp[2] == 0x12:
@@ -23,10 +23,10 @@ def command(command, serial):
             raise Exception('Invalid Command')
             
         print("Command Sent:\t\t",end=' ')
-        bk8500b.printCmd(command)
+        printCmd(command)
             
         print("Reponse Received:\t",end=' ')    
-        bk8500b.printCmd(resp)
+        printCmd(resp)
     else:
         return resp
     
@@ -45,7 +45,7 @@ def remoteMode(state, serial):
         cmd[3] = 1
     else:
         cmd[3] = 0
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
     
 def inputOn(state, serial):
     """Input On. state = True or False"""
@@ -55,7 +55,7 @@ def inputOn(state, serial):
         cmd[3] = 1
     else:
         cmd[3] = 0
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
     
 def setMaxVoltage(voltage, serial):
     value = int(voltage * 1000)
@@ -66,13 +66,13 @@ def setMaxVoltage(voltage, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
     
 def readMaxVoltage(serial):
     """Read Max Voltage"""
     cmd = [0] * 26
     cmd[2] = 0x23
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     voltage = resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24)
     return voltage/1000.00
     
@@ -86,13 +86,13 @@ def setMaxCurrent(current, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
 
 def readMaxCurrent(serial):
     """Read the max setup input current."""
     cmd = [0] * 26
     cmd[2] = 0x25
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/10000.00
     
 def setMaxPower(power, serial):
@@ -104,14 +104,14 @@ def setMaxPower(power, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
  
 
 def readMaxPower(serial):
     """Read the max setup input power."""
     cmd = [0] * 26
     cmd[2] = 0x27
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
 
 def setMode(mode, serial):
@@ -121,13 +121,13 @@ def setMode(mode, serial):
     cmd = [0] * 26
     cmd[2] = 0x28
     cmd[3] = mode
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
 
 def readMode(serial):
     """Read the operation mode."""
     cmd = [0] * 26
     cmd[2] = 0x29
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp[3]
 
 def setCCCurrent(current, serial):
@@ -139,14 +139,14 @@ def setCCCurrent(current, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     
 
 def readCCCurrent(serial):
     """Read CC mode current value"""
     cmd = [0] * 26
     cmd[2] = 0x2B
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/10000.00
 
 def setCVVoltage(voltage, serial):
@@ -158,13 +158,13 @@ def setCVVoltage(voltage, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
     
 def readCVVoltage(serial):
     """Read CV mode voltage value"""
     cmd = [0] * 26
     cmd[2] = 0x2D
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
 
 def setCWPower(power, serial):
@@ -176,13 +176,13 @@ def setCWPower(power, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
     
 def readCWPower(serial):
     """Read CW mode watt value"""
     cmd = [0] * 26
     cmd[2] = 0x2F
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
 
 def setCRResistance(resistance, serial):
@@ -194,13 +194,13 @@ def setCRResistance(resistance, serial):
     cmd[4] = (value >> 8) & 0xFF
     cmd[5] = (value >> 16) & 0xFF
     cmd[6] = (value >> 24) & 0xFF
-    bk8500b.command(cmd, serial)
+    command(cmd, serial)
     
 def readCRResistance(serial):
     """Read CR mode resistance value"""
     cmd = [0] * 26
     cmd[2] = 0x31
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
     
 def setCCTransient(serial):
@@ -212,7 +212,7 @@ def readCCTransient(serial):
     """Read CC mode transient parameter"""
     cmd = [0] * 26
     cmd[2] = 0x33
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
     
 def setCVTransient(serial):
@@ -224,7 +224,7 @@ def readCVTransient(serial):
     """Read CV mode transient parameter"""
     cmd = [0] * 26
     cmd[2] = 0x35
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCWTransient(serial):
@@ -236,7 +236,7 @@ def readCWTransient(serial):
     """Read CW mode transient parameter"""
     cmd = [0] * 26
     cmd[2] = 0x37
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCRTransient(serial):
@@ -248,7 +248,7 @@ def readCRTransient(serial):
     """Read CR mode transient parameter"""
     cmd = [0] * 26
     cmd[2] = 0x39
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCCList(serial):
@@ -260,7 +260,7 @@ def readCCList(serial):
     """Read the list operation mode."""
     cmd = [0] * 26
     cmd[2] = 0x3B
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setListRepeat(serial):
@@ -272,7 +272,7 @@ def readListRepeat(serial):
     """Read the list repeat mode."""
     cmd = [0] * 26
     cmd[2] = 0x3D
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setListStepCount(serial):
@@ -284,7 +284,7 @@ def readListStepCount(serial):
     """Read list steps counts"""
     cmd = [0] * 26
     cmd[2] = 0x3F
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setStepTime(serial):
@@ -296,7 +296,7 @@ def readStepTime(serial):
     """Read one of the step's current and time values."""
     cmd = [0] * 26
     cmd[2] = 0x41
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def saveListFile(serial):
@@ -318,7 +318,7 @@ def readTimer(serial):
     """Read timer value of FOR LOAD ON"""
     cmd = [0] * 26
     cmd[2] = 0x51
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setTimerState(serial):
@@ -330,7 +330,7 @@ def readTimerState(serial):
     """Read timer state of FOR LOAD ON"""
     cmd = [0] * 26
     cmd[2] = 0x53
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setAddress(serial):
@@ -352,7 +352,7 @@ def readEnableRemoteSense(serial):
     """Read the state of remote sense mode."""
     cmd = [0] * 26
     cmd[2] = 0x57
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setTriggerSource(serial):
@@ -364,7 +364,7 @@ def readTriggerSource(serial):
     """Read trigger source."""
     cmd = [0] * 26
     cmd[2] = 0x59
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def trigger(serial):
@@ -391,21 +391,21 @@ def readFunctionMode(serial):
     """Read function mode state."""
     cmd = [0] * 26
     cmd[2] = 0x5E
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def readInputLevels(serial):
     """Read input voltage, current, power and relative state"""
     cmd = [0] * 26
     cmd[2] = 0x5F
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def readMaxSettings(serial):
     """Read the information of E-Load (rated current/voltage, min voltage, max power, max resistance, min resistance)"""
     cmd = [0] * 26
     cmd[2] = 0x01
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setOPP(serial):
@@ -417,7 +417,7 @@ def readOPP(serial):
     """Read hardware OPP point"""
     cmd = [0] * 26
     cmd[2] = 0x03
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setSoftOCP(serial):
@@ -429,7 +429,7 @@ def readSoftOCP(serial):
     """Read software OCP point"""
     cmd = [0] * 26
     cmd[2] = 0x81
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setOCPDelay(serial):
@@ -441,7 +441,7 @@ def readOCPDelay(serial):
     """Read OCP delay time"""
     cmd = [0] * 26
     cmd[2] = 0x83
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setEnableOCP(serial):
@@ -453,7 +453,7 @@ def readEnableOCP(serial):
     """Read the state of OCP function"""
     cmd = [0] * 26
     cmd[2] = 0x85
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setSoftOPP(serial):
@@ -465,7 +465,7 @@ def readSoftOPP(serial):
     """Read software OPP point"""
     cmd = [0] * 26
     cmd[2] = 0x87
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setSoftOPPDelay(serial):
@@ -477,7 +477,7 @@ def readSoftOPPDelay(serial):
     """Read software OPP delay time"""
     cmd = [0] * 26
     cmd[2] = 0x89
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setFirstMeasuredPoint(serial):
@@ -489,7 +489,7 @@ def readFirstMeasuredPoint(serial):
     """Read the first measured point"""
     cmd = [0] * 26
     cmd[2] = 0x8B
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setSecondMeasuredPoint(serial):
@@ -501,7 +501,7 @@ def readSecondMeasuredPoint(serial):
     """Read the second measured point"""
     cmd = [0] * 26
     cmd[2] = 0x8D
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setVdCRLED(serial):
@@ -513,7 +513,7 @@ def readVdCRLED(serial):
     """Read Vd value of CR-LED mode"""
     cmd = [0] * 26
     cmd[2] = 0x8F
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def clearProtect(serial):
@@ -530,7 +530,7 @@ def readEnableAutorange(serial):
     """Read the state of voltage autorange"""
     cmd = [0] * 26
     cmd[2] = 0x92
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setEnableCRLED(serial):
@@ -542,7 +542,7 @@ def readCRLEDState(serial):
     """Read the state of CR-LED mode"""
     cmd = [0] * 26
     cmd[2] = 0x94
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def forceTrigger(serial):
@@ -554,49 +554,49 @@ def readTimer(serial):
     """Read related information of E-load (working time, the rest time of the timer)"""
     cmd = [0] * 26
     cmd[2] = 0xA0
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
         
 def readInfo(serial):
     """Read related information of E-load (max input voltage and current, min input votage and current)"""
     cmd = [0] * 26
     cmd[2] = 0xA1
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def readMaxMeasuredVoltage(serial):
     """Read the max measured voltage in list mode"""
     cmd = [0] * 26
     cmd[2] = 0xA2
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
     
 def readMinMeasuredVoltage(serial):
     """Read the min measured voltage in list mode"""
     cmd = [0] * 26
     cmd[2] = 0xA3
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def readMaxMeasuredCurrent(serial):
     """Read the max measured current in list mode"""
     cmd = [0] * 26
     cmd[2] = 0xA4
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def readMinMeasuredCurrent(serial):
     """Read the min measured current of E-load"""
     cmd = [0] * 26
     cmd[2] = 0xA5
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
     
 def readCapacity(serial):
     """Read the capacity"""
     cmd = [0] * 26
     cmd[2] = 0xA6
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCurrentSlopeRise(serial):
@@ -608,7 +608,7 @@ def readCurrentSlopeRise(serial):
     """Read current rising slope"""
     cmd = [0] * 26
     cmd[2] = 0xB1
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCurrentSlopeFall(serial):
@@ -620,7 +620,7 @@ def readCurrentSlopeFall(serial):
     """Read current falling slope"""
     cmd = [0] * 26
     cmd[2] = 0xB3
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCCVoltageMax(serial):
@@ -632,7 +632,7 @@ def readCCVoltageMax(serial):
     """Read the voltage upper limit in CC mode"""
     cmd = [0] * 26
     cmd[2] = 0xB5
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCCVoltageMin(serial):
@@ -644,7 +644,7 @@ def readCCVoltageMin(serial):
     """Read the voltage lower limit in CC mode"""
     cmd = [0] * 26
     cmd[2] = 0xB7
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
     
 def setCVCurrentMax(serial):
@@ -656,7 +656,7 @@ def readCVCurrentMax(serial):
     """Read the current upper limit in CV mode"""
     cmd = [0] * 26
     cmd[2] = 0xB9
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCVCurrentMin(serial):
@@ -668,7 +668,7 @@ def readCVCurrentMin(serial):
     """Read the current lower limit in CV mode"""
     cmd = [0] * 26
     cmd[2] = 0xBB
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCPVoltageMax(serial):
@@ -680,7 +680,7 @@ def readCPVoltageMax(serial):
     """Read the voltage upper limit in CP mode"""
     cmd = [0] * 26
     cmd[2] = 0xBD
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
     
 def setCPVoltageMin(serial):
@@ -692,7 +692,7 @@ def readCPVoltageMin(serial):
     """Read the voltage lower limit in CP mode"""
     cmd = [0] * 26
     cmd[2] = 0xBF
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setMaxResistance(serial):
@@ -704,7 +704,7 @@ def readMaxResistance(serial):
     """Read the max input resistance"""
     cmd = [0] * 26
     cmd[2] = 0xC1
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCRVoltageMax(serial):
@@ -716,7 +716,7 @@ def readCRVoltageMax(serial):
     """Read the voltage upper limit in CR mode"""
     cmd = [0] * 26
     cmd[2] = 0xC3
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setCRVoltageMin(serial):
@@ -728,7 +728,7 @@ def readCRVoltageMin(serial):
     """Read the voltage lower limit in CR mode"""
     cmd = [0] * 26
     cmd[2] = 0xC5
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setListCurrentRange(serial):
@@ -740,7 +740,7 @@ def readListCurrentRange(serial):
     """Read the current range in list mode"""
     cmd = [0] * 26
     cmd[2] = 0xC7
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setAutotestSteps(serial):
@@ -752,7 +752,7 @@ def readAutotestSteps(serial):
     """Read step counts of autotest file"""
     cmd = [0] * 26
     cmd[2] = 0xD1
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setShortSteps(serial):
@@ -764,7 +764,7 @@ def readShortSteps(serial):
     """Read short steps"""
     cmd = [0] * 26
     cmd[2] = 0xD3
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
     
 def setPauseSteps(serial):
@@ -776,7 +776,7 @@ def readPauseSteps(serial):
     """Read pause steps"""
     cmd = [0] * 26
     cmd[2] = 0xD5
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setSingleStepTime(serial):
@@ -788,7 +788,7 @@ def readSingleStepTime(serial):
     """Read the on-load time of single step"""
     cmd = [0] * 26
     cmd[2] = 0xD7
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setSingleStepDelay(serial):
@@ -800,7 +800,7 @@ def readSingleStepDelay(serial):
     """Read the delay time of single step"""
     cmd = [0] * 26
     cmd[2] = 0xD9
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setStepNoLoadTime(serial):
@@ -812,7 +812,7 @@ def readStepNoLoadTime(serial):
     """Read the no-load time of single step"""
     cmd = [0] * 26
     cmd[2] = 0xDB
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setAutotestStopCondition(serial):
@@ -824,7 +824,7 @@ def readAutotestStopCondition(serial):
     """Read autotest stop condition"""
     cmd = [0] * 26
     cmd[2] = 0xDD
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def setAutotestChainFile(serial):
@@ -836,7 +836,7 @@ def readAutotestChainFile(serial):
     """Read autotest chain file"""
     cmd = [0] * 26
     cmd[2] = 0xDF
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
 def saveAutotestFile(serial):
@@ -858,18 +858,24 @@ def readVonMode(serial):
     """Read Von mode"""
     cmd = [0] * 26
     cmd[2] = 0x0F
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
-def setVonPoint(serial):
+def setVonPoint(voltage, serial):
     """Set Von point"""
+    value = int(voltage*1000)
     cmd = [0] * 26
     cmd[2] = 0x10
+    cmd[3] = value & 0xFF
+    cmd[4] = (value >> 8) & 0xFF
+    cmd[5] = (value >> 16) & 0xFF
+    cmd[6] = (value >> 24) & 0xFF
+    command(cmd, serial)
 
 def readVonPoint(serial):
     """Read Von point"""
     cmd = [0] * 26
     cmd[2] = 0x11
-    resp = bk8500b.command(cmd, serial)
+    resp = command(cmd, serial)
     return resp
 
