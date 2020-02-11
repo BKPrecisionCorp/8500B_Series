@@ -203,10 +203,35 @@ def readCRResistance(serial):
     resp = command(cmd, serial)
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
     
-def setCCTransient(serial):
+def setCCTransient(aCurrent, bCurrent, aTime, bTime, mode, serial):
     """Set CC mode transient current and timer parameter."""
+    """ aCurrent - current in Amps"""
+    """ bCurrent - current in Amps"""
+    """ aTime - A level time in milliseconds"""
+    """ bTime - B level time in milliseconds"""
+    """ mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
+    aCurr = int(aCurrent*10000)
+    aT = int(aTime*10)
+    bCurr = int(bCurrent*10000)
+    bT = int(bTime*10)
+    print(aCurr)
     cmd = [0] * 26
     cmd[2] = 0x32
+    cmd[3] = aCurr & 0xFF
+    cmd[4] = (aCurr >> 8) & 0xFF
+    cmd[5] = (aCurr >> 16) & 0xFF
+    cmd[6] = (aCurr >> 24) & 0xFF
+    cmd[7] = aT & 0xFF
+    cmd[8] = (aT >> 8) & 0xFF
+    cmd[9] = bCurr & 0xFF
+    cmd[10] = (bCurr >> 8) & 0xFF
+    cmd[11] = (bCurr >> 16) & 0xFF
+    cmd[12] = (bCurr >> 24) & 0xFF
+    cmd[13] = bT & 0xFF
+    cmd[14] = (bT >> 8) & 0xFF
+    cmd[15] = mode
+    command(cmd, serial)
+    
 
 def readCCTransient(serial):
     """Read CC mode transient parameter"""
@@ -215,10 +240,33 @@ def readCCTransient(serial):
     resp = command(cmd, serial)
     return resp
     
-def setCVTransient(serial):
-    """Set CV mode transient voltage and timer parameter."""
+def setCV(aVoltage, bVoltage, aTime, bTime, mode, serial):
+    """Set CC mode transient current and timer parameter."""
+    """ aVoltage - Voltage in Volts"""
+    """ bVoltage - Voltage in Volts"""
+    """ aTime - A level time in milliseconds"""
+    """ bTime - B level time in milliseconds"""
+    """ mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
+    aVolt = int(aVoltage*10000)
+    aT = int(aTime*10)
+    bVolt = int(aVoltage*10000)
+    bT = int(bTime*10)
     cmd = [0] * 26
-    cmd[2] = 0x34
+    cmd[2] = 0x32
+    cmd[3] = aVolt & 0xFF
+    cmd[4] = (aVolt >> 8) & 0xFF
+    cmd[5] = (aVolt >> 16) & 0xFF
+    cmd[6] = (aVolt >> 24) & 0xFF
+    cmd[7] = aT & 0xFF
+    cmd[8] = (aT >> 8) & 0xFF
+    cmd[9] = bVolt & 0xFF
+    cmd[10] = (bVolt >> 8) & 0xFF
+    cmd[11] = (bVolt >> 16) & 0xFF
+    cmd[12] = (bVolt >> 24) & 0xFF
+    cmd[13] = bT & 0xFF
+    cmd[14] = (bT >> 8) & 0xFF
+    cmd[15] = mode
+    command(cmd, serial)
 
 def readCVTransient(serial):
     """Read CV mode transient parameter"""
