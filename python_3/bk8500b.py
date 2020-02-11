@@ -403,10 +403,13 @@ def readEnableRemoteSense(serial):
     resp = command(cmd, serial)
     return resp
 
-def setTriggerSource(serial):
+def setTriggerSource(source, serial):
     """Set trigger source."""
+    """source - 0 = manual, 1 = external, 2 = bus, 3 = hold"""
     cmd = [0] * 26
     cmd[2] = 0x58
+    cmd[3] = source
+    command(cmd, serial)
 
 def readTriggerSource(serial):
     """Read trigger source."""
@@ -430,10 +433,13 @@ def recallUserSettings(serial):
     cmd = [0] * 26
     cmd[2] = 0x5C
 
-def setFunctionMode(serial):
+def setFunctionMode(function, serial):
     """Set function mode (FIXED/SHORT/TRAN/LIST/BATTERY)."""
+    """function - 0 = fixed, 1 = short, 2 = transient, 3 = list, 4 = battery"""
     cmd = [0] * 26
     cmd[2] = 0x5D
+    cmd[3] = function
+    command(cmd, serial)
 
 def readFunctionMode(serial):
     """Read function mode state."""
