@@ -204,12 +204,12 @@ def readCRResistance(serial):
     return (resp[3] + (resp[4]<<8) + (resp[5]<<16) + (resp[6] << 24))/1000.00
     
 def setCCTransient(aCurrent, bCurrent, aTime, bTime, mode, serial):
-    """Set CC mode transient current and timer parameter."""
-    """ aCurrent - current in Amps"""
-    """ bCurrent - current in Amps"""
-    """ aTime - A level time in milliseconds"""
-    """ bTime - B level time in milliseconds"""
-    """ mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
+    """Set CC mode transient current and timer parameter.
+    aCurrent - current in Amps
+    bCurrent - current in Amps
+    aTime - A level time in milliseconds
+    bTime - B level time in milliseconds
+    mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
     aCurr = int(aCurrent*10000)
     aT = int(aTime*10)
     bCurr = int(bCurrent*10000)
@@ -404,8 +404,8 @@ def readEnableRemoteSense(serial):
     return resp
 
 def setTriggerSource(source, serial):
-    """Set trigger source."""
-    """source - 0 = manual, 1 = external, 2 = bus, 3 = hold"""
+    """Set trigger source.
+    source - 0 = manual, 1 = external, 2 = bus, 3 = hold"""
     cmd = [0] * 26
     cmd[2] = 0x58
     cmd[3] = source
@@ -434,8 +434,8 @@ def recallUserSettings(serial):
     cmd[2] = 0x5C
 
 def setFunctionMode(function, serial):
-    """Set function mode (FIXED/SHORT/TRAN/LIST/BATTERY)."""
-    """function - 0 = fixed, 1 = short, 2 = transient, 3 = list, 4 = battery"""
+    """Set (function):
+    function - 0=fixed, 1=short, 2=transient, 3=list, 4=battery"""
     cmd = [0] * 26
     cmd[2] = 0x5D
     cmd[3] = function
