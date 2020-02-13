@@ -241,18 +241,18 @@ def readCCTransient(serial):
     return resp
     
 def setCV(aVoltage, bVoltage, aTime, bTime, mode, serial):
-    """Set CC mode transient current and timer parameter."""
-    """ aVoltage - Voltage in Volts"""
-    """ bVoltage - Voltage in Volts"""
-    """ aTime - A level time in milliseconds"""
-    """ bTime - B level time in milliseconds"""
-    """ mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
+    """Set CV mode transient current and timer parameter.
+    aVoltage - Voltage in Volts
+    bVoltage - Voltage in Volts
+    aTime - A level time in milliseconds
+    bTime - B level time in milliseconds
+    mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
     aVolt = int(aVoltage*10000)
     aT = int(aTime*10)
     bVolt = int(aVoltage*10000)
     bT = int(bTime*10)
     cmd = [0] * 26
-    cmd[2] = 0x32
+    cmd[2] = 0x34
     cmd[3] = aVolt & 0xFF
     cmd[4] = (aVolt >> 8) & 0xFF
     cmd[5] = (aVolt >> 16) & 0xFF
@@ -275,10 +275,33 @@ def readCVTransient(serial):
     resp = command(cmd, serial)
     return resp
 
-def setCWTransient(serial):
-    """Set CW mode transient watt and timer parameter"""
+def setCWTransient(aPower, bPower, aTime, bTime, mode, serial):
+    """Set CW mode transient current and timer parameter.
+    aPower - Power in Watts
+    bPower - Power in Watts
+    aTime - A level time in milliseconds
+    bTime - B level time in milliseconds
+    mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
+    aPow = int(aPower*100)
+    aT = int(aTime*10)
+    bPow = int(bPower*100)
+    bT = int(bTime*10)
     cmd = [0] * 26
     cmd[2] = 0x36
+    cmd[3] = aPow & 0xFF
+    cmd[4] = (aPow >> 8) & 0xFF
+    cmd[5] = (aPow >> 16) & 0xFF
+    cmd[6] = (aPow >> 24) & 0xFF
+    cmd[7] = aT & 0xFF
+    cmd[8] = (aT >> 8) & 0xFF
+    cmd[9] = bPow & 0xFF
+    cmd[10] = (bPow >> 8) & 0xFF
+    cmd[11] = (bPow >> 16) & 0xFF
+    cmd[12] = (bPow >> 24) & 0xFF
+    cmd[13] = bT & 0xFF
+    cmd[14] = (bT >> 8) & 0xFF
+    cmd[15] = mode
+    command(cmd, serial)
 
 def readCWTransient(serial):
     """Read CW mode transient parameter"""
@@ -287,10 +310,33 @@ def readCWTransient(serial):
     resp = command(cmd, serial)
     return resp
 
-def setCRTransient(serial):
-    """Set CR mode transient resistance and timer parameter"""
+def setCRTransient(aResistance, bResistance, aTime, bTime, mode, serial):
+    """Set CW mode transient current and timer parameter.
+    aPower - Resistance in Ohms
+    bPower - Resistance in Ohms
+    aTime - A level time in milliseconds
+    bTime - B level time in milliseconds
+    mode - 1 = Continuous, 2 = Pulse, 3 = Toggled """
+    aRes = int(aResistance*1)
+    aT = int(aTime*10)
+    bRes = int(bResistance*1)
+    bT = int(bTime*10)
     cmd = [0] * 26
     cmd[2] = 0x38
+    cmd[3] = aRes & 0xFF
+    cmd[4] = (aRes >> 8) & 0xFF
+    cmd[5] = (aRes >> 16) & 0xFF
+    cmd[6] = (aRes >> 24) & 0xFF
+    cmd[7] = aT & 0xFF
+    cmd[8] = (aT >> 8) & 0xFF
+    cmd[9] = bRes & 0xFF
+    cmd[10] = (bRes >> 8) & 0xFF
+    cmd[11] = (bRes >> 16) & 0xFF
+    cmd[12] = (bRes >> 24) & 0xFF
+    cmd[13] = bT & 0xFF
+    cmd[14] = (bT >> 8) & 0xFF
+    cmd[15] = mode
+    command(cmd, serial)
 
 def readCRTransient(serial):
     """Read CR mode transient parameter"""
@@ -303,6 +349,8 @@ def setCCList(serial):
     """Set the list operation mode (CC)"""
     cmd = [0] * 26
     cmd[2] = 0x3A
+    cmd[3] = 0
+    command(cmd, serial)
 
 def readCCList(serial):
     """Read the list operation mode."""
@@ -311,10 +359,13 @@ def readCCList(serial):
     resp = command(cmd, serial)
     return resp
 
-def setListRepeat(serial):
-    """Set the list repeat mode (ONCE/REPEAT)"""
+def setListRepeat(repeat, serial):
+    """Set the list repeat mode (ONCE/REPEAT)
+    (repeat) - 0=Once, 1-65534 or 65535 = forever"""
     cmd = [0] * 26
     cmd[2] = 0x3C
+    cmd[3] = repeat #this should be 2 bytes... I think (Ryan)
+    command(cmd, serial)
 
 def readListRepeat(serial):
     """Read the list repeat mode."""
@@ -323,10 +374,14 @@ def readListRepeat(serial):
     resp = command(cmd, serial)
     return resp
 
-def setListStepCount(serial):
-    """Set list steps counts."""
+def setListStepCount(stepCount, serial):
+    """Set list steps counts.
+    (stepCount) = number of steps"""
     cmd = [0] * 26
     cmd[2] = 0x3E
+    cmd[3] = stepCount & 0xFF
+    cmd[4] = (stepCount >> 8) & 0xFF
+    command(cmd, serial)
 
 def readListStepCount(serial):
     """Read list steps counts"""
@@ -335,10 +390,24 @@ def readListStepCount(serial):
     resp = command(cmd, serial)
     return resp
 
-def setStepTime(serial):
-    """Set one of the step's current and time values."""
+def setStepTime(stepNumber, current, time, serial):
+    """Set one of the step's current and time values.
+    stepNumer - (1-84)
+    current - in Amps
+    time - in milliseconds
+    """
+    curr = int(current*10000)
     cmd = [0] * 26
     cmd[2] = 0x40
+    cmd[3] = stepNumber & 0xFF
+    cmd[4] = (stepNumber >> 8) & 0xFF
+    cmd[5] = bCurr & 0xFF
+    cmd[6] = (bCurr >> 8) & 0xFF
+    cmd[7] = (bCurr >> 16) & 0xFF
+    cmd[8] = (bCurr >> 24) & 0xFF
+    cmd[9] = time & 0xFF
+    cmd[10] = (time >> 8) & 0xFF
+    command(cmd, serial)
 
 def readStepTime(serial):
     """Read one of the step's current and time values."""
@@ -347,20 +416,29 @@ def readStepTime(serial):
     resp = command(cmd, serial)
     return resp
 
-def saveListFile(serial):
-    """Save list file in appointed area."""
+def saveListFile(location, serial):
+    """Save list file in appointed area.
+    location - 1-7"""
     cmd = [0] * 26
     cmd[2] = 0x4C
+    cmd[3] = location
+    command(cmd, serial)
 
-def recallListFile(serial):
-    """Recall the list file from the appointed area."""
+def recallListFile(location, serial):
+    """Recall the list file from the appointed area.
+    (location) - 1-7"""
     cmd = [0] * 26
     cmd[2] = 0x4D
+    return command(cmd, serial)
     
-def setTimer(serial):
-    """Set timer value of FOR LOAD ON"""
+def setTimer(time, serial):
+    """Set timer value of FOR LOAD ON
+    (time) - seconds"""
     cmd = [0] * 26
     cmd[2] = 0x50
+    cmd[3] = time & 0xFF
+    cmd[4] = (time >> 8) & 0xFF
+    command(cmd, serial)
 
 def readTimer(serial):
     """Read timer value of FOR LOAD ON"""
@@ -369,10 +447,17 @@ def readTimer(serial):
     resp = command(cmd, serial)
     return resp
 
-def setTimerState(serial):
-    """Disable/Enable timer of FOR LOAD ON"""
+def setTimerState(state, serial):
+    """Disable/Enable timer of FOR LOAD ON
+    (state) - Boolean True/False"""
     cmd = [0] * 26
     cmd[2] = 0x52
+    if state:
+        cmd[3] = 1
+    else:
+        cmd[3] = 0
+    command(cmd, serial)
+    
 
 def readTimerState(serial):
     """Read timer state of FOR LOAD ON"""
@@ -381,20 +466,35 @@ def readTimerState(serial):
     resp = command(cmd, serial)
     return resp
 
-def setAddress(serial):
-    """Set communication address"""
+def setAddress(address, serial):
+    """Set communication address
+    (address) - 0-31"""
     cmd = [0] * 26
     cmd[2] = 0x54
+    cmd[3] = address
+    command(cmd, serial)
 
-def setEnableLocalButton(serial):
-    """Enable/Disable LOCAL control button."""
+def setEnableLocalButton(state, serial):
+    """Enable/Disable LOCAL control button.
+    (state) - Boolean True/False"""
     cmd = [0] * 26
     cmd[2] = 0x55
+    if state:
+        cmd[3] = 1
+    else:
+        cmd[3] = 0
+    command(cmd, serial)
 
-def setEnableRemoteSense(serial):
-    """Enable/Disable remote sense mode."""
+def setEnableRemoteSense(state, serial):
+    """Enable/Disable remote sense mode.
+    (state) - Boolean True/False"""
     cmd = [0] * 26
     cmd[2] = 0x56
+    if state:
+        cmd[3] = 1
+    else:
+        cmd[3] = 0
+    command(cmd, serial)
 
 def readEnableRemoteSense(serial):
     """Read the state of remote sense mode."""
@@ -422,6 +522,7 @@ def trigger(serial):
     """Sending a trigger signal to trigging the electronic load."""
     cmd = [0] * 26
     cmd[2] = 0x5A
+    command(cmd, serial)
 
 def saveUserSettings(serial):
     """Saving user's setting value in appointed memory area for recall."""
