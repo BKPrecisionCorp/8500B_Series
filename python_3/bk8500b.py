@@ -524,15 +524,19 @@ def trigger(serial):
     cmd[2] = 0x5A
     command(cmd, serial)
 
-def saveUserSettings(serial):
+def saveUserSettings(location, serial):
     """Saving user's setting value in appointed memory area for recall."""
     cmd = [0] * 26
     cmd[2] = 0x5B
+    cmd[3] = location
+    command(cmd, serial)
 
-def recallUserSettings(serial):
+def recallUserSettings(location, serial):
     """Recall user's setting value in appointed memory area."""
     cmd = [0] * 26
     cmd[2] = 0x5C
+    cmd[3] = location
+    command(cmd, serial)
 
 def setFunctionMode(function, serial):
     """Set (function):
@@ -543,7 +547,7 @@ def setFunctionMode(function, serial):
     command(cmd, serial)
 
 def readFunctionMode(serial):
-    """Read function mode state."""
+    """Read the function mode."""
     cmd = [0] * 26
     cmd[2] = 0x5E
     resp = command(cmd, serial)
@@ -563,10 +567,43 @@ def readMaxSettings(serial):
     resp = command(cmd, serial)
     return resp
 
-def setOPP(serial):
+def readStatusRegister(serial):
+    """Read the status register
+    0 - Reverse Voltage
+    1 - Over Voltage
+    2 - Over Current
+    3 - Over Power
+    4 - Over Temp
+    5 - Remote Sense Wire Disconnected
+    6 - Constant Current
+    7 - Constant Voltage
+    8 - Constant Power
+    9 - Constant Resistance
+    10 - Pass Autotest
+    11 - Fail Autotest
+    12 - Autotest Complete """
+    cmd = [0] * 26
+    cmd[2] = 0x00
+    resp = command(cmd, serial)
+    return resp
+
+def readMaxMinInfo(serial):
     """Set hardware OPP point"""
     cmd = [0] * 26
+    cmd[2] = 0x01
+    resp = command(cmd, serial)
+    return resp
+
+def setOPP(power, serial):
+    """Set hardware OPP point"""
+    powLim = int(power * 1000) #check this...
+    cmd = [0] * 26
     cmd[2] = 0x02
+    cmd[3] = powLim & 0xFF
+    cmd[4] = (powLim >> 8) & 0xFF
+    cmd[4] = (powLim >> 16) & 0xFF
+    cmd[4] = (powLim >> 24) & 0xFF
+    command(cmd, serial)
 
 def readOPP(serial):
     """Read hardware OPP point"""
@@ -575,12 +612,19 @@ def readOPP(serial):
     resp = command(cmd, serial)
     return resp
 
-def setSoftOCP(serial):
-    """Set software OCP point"""
+def setOCP(current, serial):
+    """Set software OCP point
+    (current) - current limit in Amps"""
+    currLim = int(current * 1000) #check this...
     cmd = [0] * 26
     cmd[2] = 0x80
+    cmd[3] = currLim & 0xFF
+    cmd[4] = (currLim >> 8) & 0xFF
+    cmd[4] = (currLim >> 16) & 0xFF
+    cmd[4] = (currLim >> 24) & 0xFF
+    command(cmd, serial)
 
-def readSoftOCP(serial):
+def readOCP(serial):
     """Read software OCP point"""
     cmd = [0] * 26
     cmd[2] = 0x81
@@ -599,10 +643,16 @@ def readOCPDelay(serial):
     resp = command(cmd, serial)
     return resp
 
-def setEnableOCP(serial):
-    """Enable/disable OCP function"""
+def setEnableOCP(state, serial):
+    """Enable/disable OCP function
+    (state) - Boolean True/False = On/off"""
     cmd = [0] * 26
     cmd[2] = 0x84
+    if state:
+        cmd[3] = 1
+    else:
+        cmd[3] = 0
+    command(cmd, serial)
 
 def readEnableOCP(serial):
     """Read the state of OCP function"""
@@ -611,10 +661,17 @@ def readEnableOCP(serial):
     resp = command(cmd, serial)
     return resp
 
-def setSoftOPP(serial):
-    """Set software OPP point"""
+def setSoftOPP(power, serial):
+    """Set software OPP point
+    (power) - power limit in Watts"""
+    plim = int(power * 10000)#check this...
     cmd = [0] * 26
     cmd[2] = 0x86
+    cmd[3] = plim & 0xFF
+    cmd[4] = (plim >> 8) & 0xFF
+    cmd[4] = (plim >> 16) & 0xFF
+    cmd[4] = (plim >> 24) & 0xFF
+    command(cmd, serial)
 
 def readSoftOPP(serial):
     """Read software OPP point"""
@@ -623,10 +680,13 @@ def readSoftOPP(serial):
     resp = command(cmd, serial)
     return resp
 
-def setSoftOPPDelay(serial):
-    """Set software OPP delay time"""
+def setSoftOPPDelay(delay, serial):
+    """Set software OPP delay time
+    (delay) - time in milliseconds""" #check this...
     cmd = [0] * 26
     cmd[2] = 0x88
+    cmd[3] = int(delay)
+    command(cmd, serial)
 
 def readSoftOPPDelay(serial):
     """Read software OPP delay time"""
